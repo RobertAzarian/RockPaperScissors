@@ -1,9 +1,9 @@
 package rockpaperscissors;
 
 public enum Option {
-    PAPER("ROCK", "SCISSORS"),
-    SCISSORS("PAPER", "ROCK"),
-    ROCK("SCISSORS", "PAPER");
+    PAPER("rock", "scissors"),
+    SCISSORS("paper", "rock"),
+    ROCK("scissors", "paper");
 
     final String wins;
     final String loses;
