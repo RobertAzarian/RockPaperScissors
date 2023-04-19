@@ -2,13 +2,12 @@ package rockpaperscissors;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
 
     static HashMap<String, Integer> playersBase = getRatingBaseFromTheFile();
+    static ArrayList<String> parametersBase;
 
     public static void main(String[] args) {
         game();
@@ -31,8 +30,15 @@ public class Main {
             }
         } while (exitStatusName != 2);      // exitStatus: 0 - exit, 1 - false, 2 - true;
 
+
+        parametersBase = new ArrayList<>();
+        parametersBase.add("rock");
+        parametersBase.add("paper");
+        parametersBase.add("scissors");
+
         do {
             String input = scanner.nextLine();
+
 
             int exitStatus = inputProcessing(input, nameOfUser);
             if (exitStatus == 0) {
@@ -42,26 +48,43 @@ public class Main {
                 continue;
             }
 
-            Option userOption = Option.valueOf(input.toUpperCase());
-            Option compOption;
-            int randOption = random.nextInt(1, 4);
-            switch (randOption) {
-                case 1 -> compOption = Option.PAPER;
-                case 2 -> compOption = Option.SCISSORS;
-                default -> compOption = Option.ROCK;
+
+            int countOfParams = parametersBase.size();
+            int userIndex = parametersBase.indexOf(input);
+            int compIndex = random.nextInt(0, countOfParams);
+
+            //     userOption = input
+            String compOption = parametersBase.get(compIndex);
+
+            int userNewPosit = userIndex;   // comparison of the position of the computer from the center
+            int compNewPosit = compIndex;   //
+
+            int cnt = countOfParams / 2;
+            int steps = 0;
+            while (userNewPosit != cnt) {
+                if (userNewPosit == countOfParams - 1) {
+                    userNewPosit = 0;
+                } else {
+                    userNewPosit++;
+                }
+                steps++;
+            }
+            for (int i = 0; i < steps; i++) {
+                if (compNewPosit == countOfParams - 1) {
+                    compNewPosit = 0;
+                } else {
+                    compNewPosit++;
+                }
             }
 
-            String uNameOption = userOption.name().toLowerCase();
-            String cNameOption = compOption.name().toLowerCase();
-
-            if (userOption == compOption) {
-                System.out.printf("There is a draw (%s)\n", uNameOption);
+            if (userIndex == compIndex) {
+                System.out.printf("There is a draw (%s)\n", input);
                 playersBase.replace(nameOfUser, playersBase.get(nameOfUser) + 50);
-            } else if (userOption.wins.equals(cNameOption)) {
-                System.out.printf("Well done. The computer chose %s and failed\n", cNameOption);
+            } else if (compNewPosit < userNewPosit){
+                System.out.printf("Well done. The computer chose %s and failed\n", compOption);
                 playersBase.replace(nameOfUser, playersBase.get(nameOfUser) + 100);
-            } else if (userOption.loses.equals(cNameOption)) {
-                System.out.printf("Sorry, but the computer chose %s\n", cNameOption);
+            } else if (compNewPosit > userNewPosit) {
+                System.out.printf("Sorry, but the computer chose %s\n", compOption);
             } else {
                 System.out.println("error");
             }
@@ -96,8 +119,15 @@ public class Main {
             return 0;
         }
 
-        for (Option option : Option.values()) {
-            if (input.toUpperCase().equals(option.name())) {
+        String[] parInpArr = input.split(",");      // setting parameters
+        if (parInpArr.length > 2 && parInpArr.length % 2 == 1) {
+            parametersBase.clear();
+            parametersBase.addAll(Arrays.asList(parInpArr));
+            return 1;
+        }
+
+        for (String option : parametersBase) {      // checking name of parameters
+            if (input.equals(option)) {
                 return 2;
             }
         }
